@@ -2,24 +2,74 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+
+import LoginPage from "./pages/LoginPage";
+import EmployeeLayout from "./layouts/EmployeeLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import EmployeeSchedule from "./pages/employee/EmployeeSchedule";
+import EmployeeAnnouncements from "./pages/employee/EmployeeAnnouncements";
+import EmployeeTimeOff from "./pages/employee/EmployeeTimeOff";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminEmployees from "./pages/admin/AdminEmployees";
+import AdminPosts from "./pages/admin/AdminPosts";
+import AdminShifts from "./pages/admin/AdminShifts";
+import AdminSchedule from "./pages/admin/AdminSchedule";
+import AdminTimeOff from "./pages/admin/AdminTimeOff";
+import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+function AppRoutes() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="*" element={<LoginPage />} />
+      </Routes>
+    );
+  }
+
+  if (user.role === 'admin') {
+    return (
+      <Routes>
+        <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+        <Route path="/admin/funcionarios" element={<AdminLayout><AdminEmployees /></AdminLayout>} />
+        <Route path="/admin/postos" element={<AdminLayout><AdminPosts /></AdminLayout>} />
+        <Route path="/admin/turnos" element={<AdminLayout><AdminShifts /></AdminLayout>} />
+        <Route path="/admin/escala" element={<AdminLayout><AdminSchedule /></AdminLayout>} />
+        <Route path="/admin/folgas" element={<AdminLayout><AdminTimeOff /></AdminLayout>} />
+        <Route path="/admin/avisos" element={<AdminLayout><AdminAnnouncements /></AdminLayout>} />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/app" element={<EmployeeLayout><EmployeeDashboard /></EmployeeLayout>} />
+      <Route path="/app/escala" element={<EmployeeLayout><EmployeeSchedule /></EmployeeLayout>} />
+      <Route path="/app/avisos" element={<EmployeeLayout><EmployeeAnnouncements /></EmployeeLayout>} />
+      <Route path="/app/folgas" element={<EmployeeLayout><EmployeeTimeOff /></EmployeeLayout>} />
+      <Route path="*" element={<Navigate to="/app" replace />} />
+    </Routes>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
