@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Shield, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,17 +8,16 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const ok = login(email, password);
-    if (!ok) {
-      setError('E-mail ou senha incorretos');
-      return;
-    }
+    setLoading(true);
+    const err = await login(email, password);
+    setLoading(false);
+    if (err) setError('E-mail ou senha incorretos');
   };
 
   return (
@@ -61,16 +59,10 @@ export default function LoginPage() {
             <p className="text-destructive text-sm font-medium text-center">{error}</p>
           )}
 
-          <Button type="submit" className="w-full h-12 text-base font-semibold gap-2">
+          <Button type="submit" className="w-full h-12 text-base font-semibold gap-2" disabled={loading}>
             <LogIn size={20} />
-            Entrar
+            {loading ? 'Entrando...' : 'Entrar'}
           </Button>
-
-          <div className="text-xs text-muted-foreground text-center space-y-1 pt-2">
-            <p className="font-semibold">Contas de demonstração:</p>
-            <p>Admin: admin@escala.com / admin123</p>
-            <p>Funcionário: carlos@escala.com / 123456</p>
-          </div>
         </form>
       </div>
     </div>
