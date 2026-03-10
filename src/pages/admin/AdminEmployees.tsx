@@ -57,6 +57,8 @@ export default function AdminEmployees() {
             valor_diaria: Number(valorDiaria) || 0,
             salario_mensal: Number(salarioMensal) || 0,
             valor_extra: Number(valorExtra) || 0,
+            usuario: usuario || null,
+            email: email || null,
           }).eq('id', authData.user.id);
           await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
         }
