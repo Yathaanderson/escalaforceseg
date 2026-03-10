@@ -135,6 +135,7 @@ export default function AdminEmployees() {
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden sm:table-cell">CPF</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden md:table-cell">Telefone</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground">Função</th>
+                <th className="text-left px-4 py-3 font-semibold text-foreground hidden lg:table-cell">Pagamento</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Status</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Ações</th>
               </tr>
