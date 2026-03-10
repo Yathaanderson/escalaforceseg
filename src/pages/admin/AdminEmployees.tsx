@@ -127,6 +127,7 @@ export default function AdminEmployees() {
     setValorDiaria(String(f.valor_diaria || 0));
     setSalarioMensal(String(f.salario_mensal || 0));
     setValorExtra(String(f.valor_extra || 0));
+    setUsuario(f.usuario || '');
     setDialogOpen(true);
   };
 
