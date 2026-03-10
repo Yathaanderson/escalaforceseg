@@ -42,7 +42,7 @@ export default function AdminEmployees() {
       });
       if (authError) throw authError;
       if (authData.user) {
-        await supabase.from('profiles').update({ cpf, telefone, funcao }).eq('id', authData.user.id);
+        await supabase.from('profiles').update({ cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', authData.user.id);
         await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
       }
     },
