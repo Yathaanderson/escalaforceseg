@@ -24,6 +24,7 @@ export default function AdminEmployees() {
   const [valorDiaria, setValorDiaria] = useState('');
   const [salarioMensal, setSalarioMensal] = useState('');
   const [valorExtra, setValorExtra] = useState('');
+  const [usuario, setUsuario] = useState('');
   const qc = useQueryClient();
 
   const { data: funcionarios = [] } = useQuery({
