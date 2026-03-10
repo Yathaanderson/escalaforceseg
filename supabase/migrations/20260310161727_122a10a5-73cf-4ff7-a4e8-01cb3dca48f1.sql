@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN dados_pagamento text;
