@@ -117,6 +117,7 @@ export default function AdminEmployees() {
               <Input placeholder="CPF" value={cpf} onChange={e => setCpf(e.target.value)} className="h-11" />
               <Input placeholder="Telefone" value={telefone} onChange={e => setTelefone(e.target.value)} className="h-11" />
               <Input placeholder="Função (ex: Vigilante)" value={funcao} onChange={e => setFuncao(e.target.value)} className="h-11" />
+              <Input placeholder="Conta bancária ou Chave PIX" value={dadosPagamento} onChange={e => setDadosPagamento(e.target.value)} className="h-11" />
               <Button type="submit" className="w-full h-11" disabled={editingId ? updateMutation.isPending : createMutation.isPending}>
                 {editingId ? (updateMutation.isPending ? 'Salvando...' : 'Salvar alterações') : (createMutation.isPending ? 'Salvando...' : 'Salvar')}
               </Button>
