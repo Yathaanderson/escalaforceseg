@@ -199,12 +199,14 @@ export type Database = {
           cpf: string | null
           created_at: string
           dados_pagamento: string | null
+          email: string | null
           funcao: string | null
           id: string
           nome: string
           salario_mensal: number | null
           telefone: string | null
           updated_at: string
+          usuario: string | null
           valor_diaria: number | null
           valor_extra: number | null
         }
@@ -213,12 +215,14 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           dados_pagamento?: string | null
+          email?: string | null
           funcao?: string | null
           id: string
           nome: string
           salario_mensal?: number | null
           telefone?: string | null
           updated_at?: string
+          usuario?: string | null
           valor_diaria?: number | null
           valor_extra?: number | null
         }
@@ -227,12 +231,14 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           dados_pagamento?: string | null
+          email?: string | null
           funcao?: string | null
           id?: string
           nome?: string
           salario_mensal?: number | null
           telefone?: string | null
           updated_at?: string
+          usuario?: string | null
           valor_diaria?: number | null
           valor_extra?: number | null
         }
