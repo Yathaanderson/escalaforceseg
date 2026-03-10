@@ -202,8 +202,11 @@ export type Database = {
           funcao: string | null
           id: string
           nome: string
+          salario_mensal: number | null
           telefone: string | null
           updated_at: string
+          valor_diaria: number | null
+          valor_extra: number | null
         }
         Insert: {
           ativo?: boolean
@@ -213,8 +216,11 @@ export type Database = {
           funcao?: string | null
           id: string
           nome: string
+          salario_mensal?: number | null
           telefone?: string | null
           updated_at?: string
+          valor_diaria?: number | null
+          valor_extra?: number | null
         }
         Update: {
           ativo?: boolean
@@ -224,8 +230,11 @@ export type Database = {
           funcao?: string | null
           id?: string
           nome?: string
+          salario_mensal?: number | null
           telefone?: string | null
           updated_at?: string
+          valor_diaria?: number | null
+          valor_extra?: number | null
         }
         Relationships: []
       }
