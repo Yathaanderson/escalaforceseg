@@ -3,9 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, UserCheck, UserX, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Search, UserCheck, UserX, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+
+function formatBRL(value: number) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
 export default function AdminEmployees() {
   const [search, setSearch] = useState('');
@@ -17,6 +21,9 @@ export default function AdminEmployees() {
   const [telefone, setTelefone] = useState('');
   const [funcao, setFuncao] = useState('Vigilante');
   const [dadosPagamento, setDadosPagamento] = useState('');
+  const [valorDiaria, setValorDiaria] = useState('');
+  const [salarioMensal, setSalarioMensal] = useState('');
+  const [valorExtra, setValorExtra] = useState('');
   const qc = useQueryClient();
 
   const { data: funcionarios = [] } = useQuery({
@@ -31,19 +38,37 @@ export default function AdminEmployees() {
   const resetForm = () => {
     setEditingId(null);
     setNome(''); setEmail(''); setCpf(''); setTelefone(''); setFuncao('Vigilante'); setDadosPagamento('');
+    setValorDiaria(''); setSalarioMensal(''); setValorExtra('');
   };
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password: '123456',
-        options: { data: { nome } },
-      });
-      if (authError) throw authError;
-      if (authData.user) {
-        await supabase.from('profiles').update({ cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', authData.user.id);
-        await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
+      if (email) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email,
+          password: '123456',
+          options: { data: { nome } },
+        });
+        if (authError) throw authError;
+        if (authData.user) {
+          await supabase.from('profiles').update({
+            cpf, telefone, funcao, dados_pagamento: dadosPagamento || null,
+            valor_diaria: Number(valorDiaria) || 0,
+            salario_mensal: Number(salarioMensal) || 0,
+            valor_extra: Number(valorExtra) || 0,
+          }).eq('id', authData.user.id);
+          await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
+        }
+      } else {
+        // Create profile without auth account
+        const { error } = await supabase.from('profiles').insert({
+          id: crypto.randomUUID(),
+          nome, cpf: cpf || null, telefone: telefone || null, funcao, dados_pagamento: dadosPagamento || null,
+          valor_diaria: Number(valorDiaria) || 0,
+          salario_mensal: Number(salarioMensal) || 0,
+          valor_extra: Number(valorExtra) || 0,
+        });
+        if (error) throw error;
       }
     },
     onSuccess: () => {
@@ -57,7 +82,12 @@ export default function AdminEmployees() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editingId) return;
-      const { error } = await supabase.from('profiles').update({ nome, cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', editingId);
+      const { error } = await supabase.from('profiles').update({
+        nome, cpf, telefone, funcao, dados_pagamento: dadosPagamento || null,
+        valor_diaria: Number(valorDiaria) || 0,
+        salario_mensal: Number(salarioMensal) || 0,
+        valor_extra: Number(valorExtra) || 0,
+      }).eq('id', editingId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -88,6 +118,9 @@ export default function AdminEmployees() {
     setTelefone(f.telefone || '');
     setFuncao(f.funcao || 'Vigilante');
     setDadosPagamento(f.dados_pagamento || '');
+    setValorDiaria(String(f.valor_diaria || 0));
+    setSalarioMensal(String(f.salario_mensal || 0));
+    setValorExtra(String(f.valor_extra || 0));
     setDialogOpen(true);
   };
 
@@ -112,11 +145,14 @@ export default function AdminEmployees() {
             <form className="space-y-3" onSubmit={e => { e.preventDefault(); editingId ? updateMutation.mutate() : createMutation.mutate(); }}>
               <Input placeholder="Nome completo" value={nome} onChange={e => setNome(e.target.value)} className="h-11" required />
               {!editingId && (
-                <Input placeholder="E-mail" type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11" required />
+                <Input placeholder="E-mail (opcional)" type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11" />
               )}
               <Input placeholder="CPF" value={cpf} onChange={e => setCpf(e.target.value)} className="h-11" />
               <Input placeholder="Telefone" value={telefone} onChange={e => setTelefone(e.target.value)} className="h-11" />
               <Input placeholder="Função (ex: Vigilante)" value={funcao} onChange={e => setFuncao(e.target.value)} className="h-11" />
+              <Input placeholder="Valor da diária (R$)" type="number" step="0.01" min="0" value={valorDiaria} onChange={e => setValorDiaria(e.target.value)} className="h-11" />
+              <Input placeholder="Salário mensal (R$)" type="number" step="0.01" min="0" value={salarioMensal} onChange={e => setSalarioMensal(e.target.value)} className="h-11" />
+              <Input placeholder="Valor extra (R$)" type="number" step="0.01" min="0" value={valorExtra} onChange={e => setValorExtra(e.target.value)} className="h-11" />
               <Input placeholder="Conta bancária ou Chave PIX" value={dadosPagamento} onChange={e => setDadosPagamento(e.target.value)} className="h-11" />
               <Button type="submit" className="w-full h-11" disabled={editingId ? updateMutation.isPending : createMutation.isPending}>
                 {editingId ? (updateMutation.isPending ? 'Salvando...' : 'Salvar alterações') : (createMutation.isPending ? 'Salvando...' : 'Salvar')}
@@ -135,7 +171,8 @@ export default function AdminEmployees() {
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden sm:table-cell">CPF</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden md:table-cell">Telefone</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground">Função</th>
-                <th className="text-left px-4 py-3 font-semibold text-foreground hidden lg:table-cell">Pagamento</th>
+                <th className="text-right px-4 py-3 font-semibold text-foreground hidden lg:table-cell">Diária</th>
+                <th className="text-right px-4 py-3 font-semibold text-foreground hidden lg:table-cell">Salário</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Status</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Ações</th>
               </tr>
@@ -147,7 +184,8 @@ export default function AdminEmployees() {
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{f.cpf || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{f.telefone || '—'}</td>
                   <td className="px-4 py-3 text-foreground">{f.funcao || '—'}</td>
-                  <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{(f as any).dados_pagamento || '—'}</td>
+                  <td className="px-4 py-3 text-right text-foreground hidden lg:table-cell">{formatBRL(Number((f as any).valor_diaria) || 0)}</td>
+                  <td className="px-4 py-3 text-right text-foreground hidden lg:table-cell">{formatBRL(Number((f as any).salario_mensal) || 0)}</td>
                   <td className="px-4 py-3 text-center">
                     <button onClick={() => toggleAtivoMutation.mutate({ id: f.id, ativo: f.ativo })} className="cursor-pointer">
                       {f.ativo ? (
