@@ -39,7 +39,7 @@ export default function AdminEmployees() {
   const resetForm = () => {
     setEditingId(null);
     setNome(''); setEmail(''); setCpf(''); setTelefone(''); setFuncao('Vigilante'); setDadosPagamento('');
-    setValorDiaria(''); setSalarioMensal(''); setValorExtra('');
+    setValorDiaria(''); setSalarioMensal(''); setValorExtra(''); setUsuario('');
   };
 
   const createMutation = useMutation({
