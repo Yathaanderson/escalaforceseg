@@ -19,6 +19,7 @@ import AdminShifts from "./pages/admin/AdminShifts";
 import AdminSchedule from "./pages/admin/AdminSchedule";
 import AdminTimeOff from "./pages/admin/AdminTimeOff";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminFinanceiro from "./pages/admin/AdminFinanceiro";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
