@@ -87,6 +87,7 @@ export default function AdminEmployees() {
     setCpf(f.cpf || '');
     setTelefone(f.telefone || '');
     setFuncao(f.funcao || 'Vigilante');
+    setDadosPagamento(f.dados_pagamento || '');
     setDialogOpen(true);
   };
 
