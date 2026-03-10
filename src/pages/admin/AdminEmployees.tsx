@@ -147,6 +147,7 @@ export default function AdminEmployees() {
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{f.cpf || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{f.telefone || '—'}</td>
                   <td className="px-4 py-3 text-foreground">{f.funcao || '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{(f as any).dados_pagamento || '—'}</td>
                   <td className="px-4 py-3 text-center">
                     <button onClick={() => toggleAtivoMutation.mutate({ id: f.id, ativo: f.ativo })} className="cursor-pointer">
                       {f.ativo ? (
