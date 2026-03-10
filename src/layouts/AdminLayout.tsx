@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, Users, MapPin, Clock, CalendarDays, 
-  Megaphone, FileText, LogOut, Shield, Menu, X
+  Megaphone, FileText, LogOut, Shield, Menu, X, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/admin/escala', icon: CalendarDays, label: 'Escala' },
   { to: '/admin/folgas', icon: FileText, label: 'Folgas' },
   { to: '/admin/avisos', icon: Megaphone, label: 'Avisos' },
+  { to: '/admin/financeiro', icon: DollarSign, label: 'Financeiro' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

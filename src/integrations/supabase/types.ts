@@ -163,27 +163,33 @@ export type Database = {
       postos: {
         Row: {
           created_at: string
+          dia_pagamento: number | null
           endereco: string
           id: string
           nome_cliente: string
           observacoes: string | null
           tipo_servico: string
+          valor_mensal: number | null
         }
         Insert: {
           created_at?: string
+          dia_pagamento?: number | null
           endereco: string
           id?: string
           nome_cliente: string
           observacoes?: string | null
           tipo_servico?: string
+          valor_mensal?: number | null
         }
         Update: {
           created_at?: string
+          dia_pagamento?: number | null
           endereco?: string
           id?: string
           nome_cliente?: string
           observacoes?: string | null
           tipo_servico?: string
+          valor_mensal?: number | null
         }
         Relationships: []
       }
