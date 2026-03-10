@@ -151,6 +151,7 @@ export default function AdminEmployees() {
             <DialogHeader><DialogTitle>{editingId ? 'Editar Funcionário' : 'Novo Funcionário'}</DialogTitle></DialogHeader>
             <form className="space-y-3" onSubmit={e => { e.preventDefault(); editingId ? updateMutation.mutate() : createMutation.mutate(); }}>
               <Input placeholder="Nome completo" value={nome} onChange={e => setNome(e.target.value)} className="h-11" required />
+              <Input placeholder="Usuário (login)" value={usuario} onChange={e => setUsuario(e.target.value)} className="h-11" />
               {!editingId && (
                 <Input placeholder="E-mail (opcional)" type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11" />
               )}
