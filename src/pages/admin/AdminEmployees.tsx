@@ -24,6 +24,7 @@ export default function AdminEmployees() {
   const [valorDiaria, setValorDiaria] = useState('');
   const [salarioMensal, setSalarioMensal] = useState('');
   const [valorExtra, setValorExtra] = useState('');
+  const [usuario, setUsuario] = useState('');
   const qc = useQueryClient();
 
   const { data: funcionarios = [] } = useQuery({
@@ -38,7 +39,7 @@ export default function AdminEmployees() {
   const resetForm = () => {
     setEditingId(null);
     setNome(''); setEmail(''); setCpf(''); setTelefone(''); setFuncao('Vigilante'); setDadosPagamento('');
-    setValorDiaria(''); setSalarioMensal(''); setValorExtra('');
+    setValorDiaria(''); setSalarioMensal(''); setValorExtra(''); setUsuario('');
   };
 
   const createMutation = useMutation({
@@ -56,6 +57,8 @@ export default function AdminEmployees() {
             valor_diaria: Number(valorDiaria) || 0,
             salario_mensal: Number(salarioMensal) || 0,
             valor_extra: Number(valorExtra) || 0,
+            usuario: usuario || null,
+            email: email || null,
           }).eq('id', authData.user.id);
           await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
         }
@@ -67,6 +70,8 @@ export default function AdminEmployees() {
           valor_diaria: Number(valorDiaria) || 0,
           salario_mensal: Number(salarioMensal) || 0,
           valor_extra: Number(valorExtra) || 0,
+          usuario: usuario || null,
+          email: email || null,
         });
         if (error) throw error;
       }
@@ -87,6 +92,7 @@ export default function AdminEmployees() {
         valor_diaria: Number(valorDiaria) || 0,
         salario_mensal: Number(salarioMensal) || 0,
         valor_extra: Number(valorExtra) || 0,
+        usuario: usuario || null,
       }).eq('id', editingId);
       if (error) throw error;
     },
@@ -121,6 +127,7 @@ export default function AdminEmployees() {
     setValorDiaria(String(f.valor_diaria || 0));
     setSalarioMensal(String(f.salario_mensal || 0));
     setValorExtra(String(f.valor_extra || 0));
+    setUsuario(f.usuario || '');
     setDialogOpen(true);
   };
 
@@ -144,6 +151,7 @@ export default function AdminEmployees() {
             <DialogHeader><DialogTitle>{editingId ? 'Editar Funcionário' : 'Novo Funcionário'}</DialogTitle></DialogHeader>
             <form className="space-y-3" onSubmit={e => { e.preventDefault(); editingId ? updateMutation.mutate() : createMutation.mutate(); }}>
               <Input placeholder="Nome completo" value={nome} onChange={e => setNome(e.target.value)} className="h-11" required />
+              <Input placeholder="Usuário (login)" value={usuario} onChange={e => setUsuario(e.target.value)} className="h-11" />
               {!editingId && (
                 <Input placeholder="E-mail (opcional)" type="email" value={email} onChange={e => setEmail(e.target.value)} className="h-11" />
               )}
