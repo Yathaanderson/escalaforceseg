@@ -3,12 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MapPin } from 'lucide-react';
+import { Plus, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 export default function AdminPosts() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [nomeCliente, setNomeCliente] = useState('');
   const [endereco, setEndereco] = useState('');
   const [tipoServico, setTipoServico] = useState('');
@@ -24,6 +25,11 @@ export default function AdminPosts() {
     },
   });
 
+  const resetForm = () => {
+    setEditingId(null);
+    setNomeCliente(''); setEndereco(''); setTipoServico(''); setObservacoes('');
+  };
+
   const createMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('postos').insert({
@@ -33,29 +39,65 @@ export default function AdminPosts() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['postos'] });
-      setDialogOpen(false);
-      setNomeCliente(''); setEndereco(''); setTipoServico(''); setObservacoes('');
+      setDialogOpen(false); resetForm();
       toast.success('Posto criado');
     },
     onError: (err: any) => toast.error(err.message),
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingId) return;
+      const { error } = await supabase.from('postos').update({
+        nome_cliente: nomeCliente, endereco, tipo_servico: tipoServico, observacoes,
+      }).eq('id', editingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['postos'] });
+      setDialogOpen(false); resetForm();
+      toast.success('Posto atualizado');
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('postos').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['postos'] });
+      toast.success('Posto excluído');
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const handleEdit = (p: any) => {
+    setEditingId(p.id);
+    setNomeCliente(p.nome_cliente);
+    setEndereco(p.endereco);
+    setTipoServico(p.tipo_servico || '');
+    setObservacoes(p.observacoes || '');
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="gap-2 h-11"><Plus size={18} /> Novo posto</Button>
+            <Button className="gap-2 h-11" onClick={() => resetForm()}><Plus size={18} /> Novo posto</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Novo Posto</DialogTitle></DialogHeader>
-            <form className="space-y-3" onSubmit={e => { e.preventDefault(); createMutation.mutate(); }}>
+            <DialogHeader><DialogTitle>{editingId ? 'Editar Posto' : 'Novo Posto'}</DialogTitle></DialogHeader>
+            <form className="space-y-3" onSubmit={e => { e.preventDefault(); editingId ? updateMutation.mutate() : createMutation.mutate(); }}>
               <Input placeholder="Nome do cliente" value={nomeCliente} onChange={e => setNomeCliente(e.target.value)} className="h-11" required />
               <Input placeholder="Endereço" value={endereco} onChange={e => setEndereco(e.target.value)} className="h-11" required />
               <Input placeholder="Tipo de serviço" value={tipoServico} onChange={e => setTipoServico(e.target.value)} className="h-11" />
               <Input placeholder="Observações" value={observacoes} onChange={e => setObservacoes(e.target.value)} className="h-11" />
-              <Button type="submit" className="w-full h-11" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Salvando...' : 'Salvar'}
+              <Button type="submit" className="w-full h-11" disabled={editingId ? updateMutation.isPending : createMutation.isPending}>
+                {editingId ? (updateMutation.isPending ? 'Salvando...' : 'Salvar alterações') : (createMutation.isPending ? 'Salvando...' : 'Salvar')}
               </Button>
             </form>
           </DialogContent>
@@ -65,11 +107,21 @@ export default function AdminPosts() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {postos.map(p => (
           <div key={p.id} className="bg-card rounded-xl p-5 border border-border shadow-sm space-y-2">
-            <div className="flex items-start gap-3">
-              <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
-              <div>
-                <h3 className="font-bold text-foreground">{p.nome_cliente}</h3>
-                <p className="text-sm text-muted-foreground">{p.endereco}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-3 min-w-0">
+                <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
+                <div>
+                  <h3 className="font-bold text-foreground">{p.nome_cliente}</h3>
+                  <p className="text-sm text-muted-foreground">{p.endereco}</p>
+                </div>
+              </div>
+              <div className="flex gap-1 shrink-0">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(p)}>
+                  <Pencil size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => deleteMutation.mutate(p.id)}>
+                  <Trash2 size={14} />
+                </Button>
               </div>
             </div>
             <div className="bg-muted rounded-lg px-3 py-2">
