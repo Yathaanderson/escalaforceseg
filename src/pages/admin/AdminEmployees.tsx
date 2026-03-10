@@ -57,7 +57,7 @@ export default function AdminEmployees() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editingId) return;
-      const { error } = await supabase.from('profiles').update({ nome, cpf, telefone, funcao }).eq('id', editingId);
+      const { error } = await supabase.from('profiles').update({ nome, cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', editingId);
       if (error) throw error;
     },
     onSuccess: () => {
