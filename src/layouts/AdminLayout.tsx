@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, Users, MapPin, Clock, CalendarDays, 
-  Megaphone, FileText, LogOut, Shield, Menu, X
+  Megaphone, FileText, LogOut, Shield, Menu, X, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 
