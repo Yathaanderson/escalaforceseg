@@ -3,9 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Plus, MapPin, Pencil, Trash2, DollarSign, CalendarDays } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+
+function formatBRL(value: number) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
 export default function AdminPosts() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -14,6 +18,8 @@ export default function AdminPosts() {
   const [endereco, setEndereco] = useState('');
   const [tipoServico, setTipoServico] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [valorMensal, setValorMensal] = useState('');
+  const [diaPagamento, setDiaPagamento] = useState('1');
   const qc = useQueryClient();
 
   const { data: postos = [] } = useQuery({
@@ -28,12 +34,15 @@ export default function AdminPosts() {
   const resetForm = () => {
     setEditingId(null);
     setNomeCliente(''); setEndereco(''); setTipoServico(''); setObservacoes('');
+    setValorMensal(''); setDiaPagamento('1');
   };
 
   const createMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('postos').insert({
         nome_cliente: nomeCliente, endereco, tipo_servico: tipoServico, observacoes,
+        valor_mensal: Number(valorMensal) || 0,
+        dia_pagamento: Number(diaPagamento) || 1,
       });
       if (error) throw error;
     },
@@ -50,6 +59,8 @@ export default function AdminPosts() {
       if (!editingId) return;
       const { error } = await supabase.from('postos').update({
         nome_cliente: nomeCliente, endereco, tipo_servico: tipoServico, observacoes,
+        valor_mensal: Number(valorMensal) || 0,
+        dia_pagamento: Number(diaPagamento) || 1,
       }).eq('id', editingId);
       if (error) throw error;
     },
@@ -79,6 +90,8 @@ export default function AdminPosts() {
     setEndereco(p.endereco);
     setTipoServico(p.tipo_servico || '');
     setObservacoes(p.observacoes || '');
+    setValorMensal(String(p.valor_mensal || 0));
+    setDiaPagamento(String(p.dia_pagamento || 1));
     setDialogOpen(true);
   };
 
@@ -95,6 +108,8 @@ export default function AdminPosts() {
               <Input placeholder="Nome do cliente" value={nomeCliente} onChange={e => setNomeCliente(e.target.value)} className="h-11" required />
               <Input placeholder="Endereço" value={endereco} onChange={e => setEndereco(e.target.value)} className="h-11" required />
               <Input placeholder="Tipo de serviço" value={tipoServico} onChange={e => setTipoServico(e.target.value)} className="h-11" />
+              <Input placeholder="Valor mensal (R$)" type="number" step="0.01" min="0" value={valorMensal} onChange={e => setValorMensal(e.target.value)} className="h-11" />
+              <Input placeholder="Dia de pagamento (1-31)" type="number" min="1" max="31" value={diaPagamento} onChange={e => setDiaPagamento(e.target.value)} className="h-11" />
               <Input placeholder="Observações" value={observacoes} onChange={e => setObservacoes(e.target.value)} className="h-11" />
               <Button type="submit" className="w-full h-11" disabled={editingId ? updateMutation.isPending : createMutation.isPending}>
                 {editingId ? (updateMutation.isPending ? 'Salvando...' : 'Salvar alterações') : (createMutation.isPending ? 'Salvando...' : 'Salvar')}
@@ -127,6 +142,16 @@ export default function AdminPosts() {
             <div className="bg-muted rounded-lg px-3 py-2">
               <p className="text-xs font-semibold text-muted-foreground">Serviço</p>
               <p className="text-sm font-medium text-foreground">{p.tipo_servico}</p>
+            </div>
+            <div className="flex gap-3">
+              <div className="flex items-center gap-1.5 text-sm">
+                <DollarSign size={14} className="text-primary" />
+                <span className="font-semibold text-foreground">{formatBRL(Number(p.valor_mensal) || 0)}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <CalendarDays size={14} />
+                <span>Dia {p.dia_pagamento || 1}</span>
+              </div>
             </div>
             {p.observacoes && <p className="text-xs text-muted-foreground">{p.observacoes}</p>}
           </div>

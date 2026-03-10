@@ -14,6 +14,7 @@ const navItems = [
   { to: '/admin/escala', icon: CalendarDays, label: 'Escala' },
   { to: '/admin/folgas', icon: FileText, label: 'Folgas' },
   { to: '/admin/avisos', icon: Megaphone, label: 'Avisos' },
+  { to: '/admin/financeiro', icon: DollarSign, label: 'Financeiro' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
