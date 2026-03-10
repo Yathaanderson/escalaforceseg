@@ -16,6 +16,7 @@ export default function AdminEmployees() {
   const [cpf, setCpf] = useState('');
   const [telefone, setTelefone] = useState('');
   const [funcao, setFuncao] = useState('Vigilante');
+  const [dadosPagamento, setDadosPagamento] = useState('');
   const qc = useQueryClient();
 
   const { data: funcionarios = [] } = useQuery({
@@ -29,7 +30,7 @@ export default function AdminEmployees() {
 
   const resetForm = () => {
     setEditingId(null);
-    setNome(''); setEmail(''); setCpf(''); setTelefone(''); setFuncao('Vigilante');
+    setNome(''); setEmail(''); setCpf(''); setTelefone(''); setFuncao('Vigilante'); setDadosPagamento('');
   };
 
   const createMutation = useMutation({
@@ -41,7 +42,7 @@ export default function AdminEmployees() {
       });
       if (authError) throw authError;
       if (authData.user) {
-        await supabase.from('profiles').update({ cpf, telefone, funcao }).eq('id', authData.user.id);
+        await supabase.from('profiles').update({ cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', authData.user.id);
         await supabase.from('user_roles').insert({ user_id: authData.user.id, role: 'funcionario' });
       }
     },
@@ -56,7 +57,7 @@ export default function AdminEmployees() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editingId) return;
-      const { error } = await supabase.from('profiles').update({ nome, cpf, telefone, funcao }).eq('id', editingId);
+      const { error } = await supabase.from('profiles').update({ nome, cpf, telefone, funcao, dados_pagamento: dadosPagamento || null }).eq('id', editingId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -86,6 +87,7 @@ export default function AdminEmployees() {
     setCpf(f.cpf || '');
     setTelefone(f.telefone || '');
     setFuncao(f.funcao || 'Vigilante');
+    setDadosPagamento(f.dados_pagamento || '');
     setDialogOpen(true);
   };
 
@@ -115,6 +117,7 @@ export default function AdminEmployees() {
               <Input placeholder="CPF" value={cpf} onChange={e => setCpf(e.target.value)} className="h-11" />
               <Input placeholder="Telefone" value={telefone} onChange={e => setTelefone(e.target.value)} className="h-11" />
               <Input placeholder="Função (ex: Vigilante)" value={funcao} onChange={e => setFuncao(e.target.value)} className="h-11" />
+              <Input placeholder="Conta bancária ou Chave PIX" value={dadosPagamento} onChange={e => setDadosPagamento(e.target.value)} className="h-11" />
               <Button type="submit" className="w-full h-11" disabled={editingId ? updateMutation.isPending : createMutation.isPending}>
                 {editingId ? (updateMutation.isPending ? 'Salvando...' : 'Salvar alterações') : (createMutation.isPending ? 'Salvando...' : 'Salvar')}
               </Button>
@@ -132,6 +135,7 @@ export default function AdminEmployees() {
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden sm:table-cell">CPF</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground hidden md:table-cell">Telefone</th>
                 <th className="text-left px-4 py-3 font-semibold text-foreground">Função</th>
+                <th className="text-left px-4 py-3 font-semibold text-foreground hidden lg:table-cell">Pagamento</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Status</th>
                 <th className="text-center px-4 py-3 font-semibold text-foreground">Ações</th>
               </tr>
@@ -143,6 +147,7 @@ export default function AdminEmployees() {
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{f.cpf || '—'}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{f.telefone || '—'}</td>
                   <td className="px-4 py-3 text-foreground">{f.funcao || '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{(f as any).dados_pagamento || '—'}</td>
                   <td className="px-4 py-3 text-center">
                     <button onClick={() => toggleAtivoMutation.mutate({ id: f.id, ativo: f.ativo })} className="cursor-pointer">
                       {f.ativo ? (

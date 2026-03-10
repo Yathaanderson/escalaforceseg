@@ -192,6 +192,7 @@ export type Database = {
           ativo: boolean
           cpf: string | null
           created_at: string
+          dados_pagamento: string | null
           funcao: string | null
           id: string
           nome: string
@@ -202,6 +203,7 @@ export type Database = {
           ativo?: boolean
           cpf?: string | null
           created_at?: string
+          dados_pagamento?: string | null
           funcao?: string | null
           id: string
           nome: string
@@ -212,6 +214,7 @@ export type Database = {
           ativo?: boolean
           cpf?: string | null
           created_at?: string
+          dados_pagamento?: string | null
           funcao?: string | null
           id?: string
           nome?: string
