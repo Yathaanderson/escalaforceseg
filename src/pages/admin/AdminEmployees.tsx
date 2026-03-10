@@ -16,6 +16,7 @@ export default function AdminEmployees() {
   const [cpf, setCpf] = useState('');
   const [telefone, setTelefone] = useState('');
   const [funcao, setFuncao] = useState('Vigilante');
+  const [dadosPagamento, setDadosPagamento] = useState('');
   const qc = useQueryClient();
 
   const { data: funcionarios = [] } = useQuery({
