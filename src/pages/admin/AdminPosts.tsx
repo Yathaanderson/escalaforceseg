@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MapPin, Pencil, Trash2, DollarSign, CalendarDays } from 'lucide-react';
+import { Plus, MapPin, Pencil, Trash2, DollarSign, CalendarDays, BarChart3 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
@@ -120,17 +121,22 @@ export default function AdminPosts() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {postos.map(p => (
-          <div key={p.id} className="bg-card rounded-xl p-5 border border-border shadow-sm space-y-2">
+        {postos.map((p: any) => (
+          <div key={p.id} className="bg-card rounded-xl p-5 border border-border shadow-sm space-y-2 group">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-3 min-w-0">
+              <Link to={`/admin/posto/${p.id}`} className="flex items-start gap-3 min-w-0 hover:opacity-80 transition-opacity">
                 <MapPin size={20} className="text-primary mt-0.5 shrink-0" />
                 <div>
                   <h3 className="font-bold text-foreground">{p.nome_cliente}</h3>
                   <p className="text-sm text-muted-foreground">{p.endereco}</p>
                 </div>
-              </div>
+              </Link>
               <div className="flex gap-1 shrink-0">
+                <Link to={`/admin/posto/${p.id}`}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" title="Ver dashboard do posto">
+                    <BarChart3 size={14} />
+                  </Button>
+                </Link>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(p)}>
                   <Pencil size={14} />
                 </Button>
@@ -141,7 +147,7 @@ export default function AdminPosts() {
             </div>
             <div className="bg-muted rounded-lg px-3 py-2">
               <p className="text-xs font-semibold text-muted-foreground">Serviço</p>
-              <p className="text-sm font-medium text-foreground">{p.tipo_servico}</p>
+              <p className="text-sm font-medium text-foreground">{p.tipo_servico || '—'}</p>
             </div>
             <div className="flex gap-3">
               <div className="flex items-center gap-1.5 text-sm">
@@ -154,6 +160,11 @@ export default function AdminPosts() {
               </div>
             </div>
             {p.observacoes && <p className="text-xs text-muted-foreground">{p.observacoes}</p>}
+            <Link to={`/admin/posto/${p.id}`} className="block">
+              <Button variant="outline" size="sm" className="w-full gap-2 mt-1 text-xs">
+                <BarChart3 size={14} /> Ver dashboard
+              </Button>
+            </Link>
           </div>
         ))}
       </div>

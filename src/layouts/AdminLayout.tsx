@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, Users, MapPin, Clock, CalendarDays, 
-  Megaphone, FileText, LogOut, Shield, Menu, X, DollarSign
+  Megaphone, FileText, LogOut, Shield, Menu, X, DollarSign, BarChart3
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -15,6 +15,7 @@ const navItems = [
   { to: '/admin/folgas', icon: FileText, label: 'Folgas' },
   { to: '/admin/avisos', icon: Megaphone, label: 'Avisos' },
   { to: '/admin/financeiro', icon: DollarSign, label: 'Financeiro' },
+  { to: '/admin/relatorios', icon: BarChart3, label: 'Relatórios' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -84,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Menu size={24} />
           </button>
           <h2 className="font-semibold text-foreground">
-            {navItems.find(n => n.to === location.pathname)?.label || 'Admin'}
+            {navItems.find(n => location.pathname.startsWith(n.to))?.label || 'Admin'}
           </h2>
         </header>
         <main className="flex-1 p-4 lg:p-6 overflow-auto">

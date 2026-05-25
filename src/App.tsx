@@ -20,6 +20,8 @@ import AdminSchedule from "./pages/admin/AdminSchedule";
 import AdminTimeOff from "./pages/admin/AdminTimeOff";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminFinanceiro from "./pages/admin/AdminFinanceiro";
+import AdminPostoDashboard from "./pages/admin/AdminPostoDashboard";
+import AdminRelatorios from "./pages/admin/AdminRelatorios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ function AppRoutes() {
         <Route path="/admin/folgas" element={<AdminLayout><AdminTimeOff /></AdminLayout>} />
         <Route path="/admin/avisos" element={<AdminLayout><AdminAnnouncements /></AdminLayout>} />
         <Route path="/admin/financeiro" element={<AdminLayout><AdminFinanceiro /></AdminLayout>} />
+        <Route path="/admin/posto/:postoId" element={<AdminLayout><AdminPostoDashboard /></AdminLayout>} />
+        <Route path="/admin/relatorios" element={<AdminLayout><AdminRelatorios /></AdminLayout>} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     );
